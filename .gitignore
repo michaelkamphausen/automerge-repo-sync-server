@@ -1,4 +1,5 @@
 /node_modules/
 /*.amrg
+*.pem
 
 automerge-repo-data

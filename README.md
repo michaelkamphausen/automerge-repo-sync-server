@@ -16,6 +16,9 @@ The server is configured with environment variables. There are two options:
 
 - `PORT` - the port to listen for websocket connections on
 - `DATA_DIR` - the directory to store saved documents in
+- `USE_HTTPS` - `"true"` if server should use https/wss; requires `HTTPS_CERT` and `HTTPS_KEY` to be configured
+- `HTTPS_CERT` - path to SSL certificate
+- `HTTPS_KEY` - path to SSL certificate key
 
 ## Contributors
 

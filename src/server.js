@@ -1,6 +1,8 @@
 // @ts-check
 import fs from "fs"
 import express from "express"
+import http from "http"
+import https from "https"
 import { WebSocketServer } from "ws"
 import { Repo } from "@automerge/automerge-repo"
 import { NodeWSServerAdapter } from "@automerge/automerge-repo-network-websocket"
@@ -22,7 +24,12 @@ export class Server {
   /** @type Repo */
   #repo
 
-  constructor() {
+  constructor(
+    /** @type boolean */
+    useHttps = false,
+    /** @type {{cert?: string, key?: string} | undefined} */
+    options,
+  ) {
     const dir =
       process.env.DATA_DIR !== undefined ? process.env.DATA_DIR : ".amrg"
     if (!fs.existsSync(dir)) {
@@ -53,7 +60,16 @@ export class Server {
       res.send(`👍 @automerge/automerge-repo-sync-server is running`)
     })
 
-    this.#server = app.listen(PORT, () => {
+    if (useHttps && options?.cert && options?.key) {
+      const cert = fs.readFileSync(options.cert)
+      const key = fs.readFileSync(options.key)
+
+      this.#server = https.createServer({ cert, key }, app)
+    } else {
+      this.#server = http.createServer(app)
+    }
+
+    this.#server.listen(PORT, () => {
       console.log(`Listening on port ${PORT}`)
       this.#isReady = true
       this.#readyResolvers.forEach((resolve) => resolve(true))
